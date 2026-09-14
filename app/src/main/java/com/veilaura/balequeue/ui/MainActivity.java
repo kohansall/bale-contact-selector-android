@@ -8,6 +8,7 @@ import android.content.ClipboardManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -74,7 +75,7 @@ public final class MainActivity extends Activity {
         scroll.addView(content, new ScrollView.LayoutParams(-1, -2));
 
         TextView title = text("مدیریت افزودن اعضای بله", 24, INK);
-        title.setTypeface(null, 1);
+        title.setTypeface(null, Typeface.BOLD);
         content.addView(title, matchWrap());
 
         TextView subtitle = text(
@@ -91,7 +92,7 @@ public final class MainActivity extends Activity {
         content.addView(statusBadge, matchWrap());
 
         TextView statsTitle = text("خلاصه این کانال", 16, INK);
-        statsTitle.setTypeface(null, 1);
+        statsTitle.setTypeface(null, Typeface.BOLD);
         statsTitle.setPadding(0, dp(20), 0, dp(8));
         content.addView(statsTitle, matchWrap());
 
@@ -194,7 +195,7 @@ public final class MainActivity extends Activity {
 
     private TextView sectionLabel(String value) {
         TextView label = text(value, 15, INK);
-        label.setTypeface(null, 1);
+        label.setTypeface(null, Typeface.BOLD);
         label.setPadding(0, dp(20), 0, dp(7));
         return label;
     }
