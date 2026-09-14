@@ -1,0 +1,67 @@
+name: Signed Android Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+      - uses: android-actions/setup-android@v3
+      - name: Validate version
+        shell: bash
+        run: |
+          expected="v$(tr -d '[:space:]' < VERSION)"
+          test "$GITHUB_REF_NAME" = "$expected"
+          grep -q "versionName '$(cat VERSION)'" app/build.gradle
+      - name: Install Android SDK
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+      - name: Test
+        run: ./gradlew --no-daemon testDebugUnitTest lintDebug
+      - name: Restore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+        run: |
+          test -n "$KEYSTORE_B64"
+          printf '%s' "$KEYSTORE_B64" | base64 --decode > "$RUNNER_TEMP/release.keystore"
+      - name: Build signed APK
+        env:
+          SIGNING_KEY: ${{ runner.temp }}/release.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_STORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
+        run: |
+          version="$(cat VERSION)"
+          mkdir -p release
+          bash tools/build_apk.sh "release/VeilAura-Bale-Selector-${version}.apk"
+      - name: Verify signature and checksum
+        shell: bash
+        run: |
+          version="$(cat VERSION)"
+          apk="release/VeilAura-Bale-Selector-${version}.apk"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs "$apk" | tee release/signature.txt
+          grep -qi 'd121e435a2e9b3f0ef500ee8e15437a12439899de6683baa4d829643c295c90f' release/signature.txt
+          sha256sum "$apk" | tee release/SHA256.txt
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version="$(cat VERSION)"
+          gh release create "$GITHUB_REF_NAME" \
+            "release/VeilAura-Bale-Selector-${version}.apk" \
+            release/SHA256.txt \
+            release/signature.txt \
+            --title "انتخاب‌گر مخاطبین بله ${version}" \
+            --notes-file RELEASE_NOTES_FA.md

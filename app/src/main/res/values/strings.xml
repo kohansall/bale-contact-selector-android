@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">انتخاب مخاطبین بله</string>
+    <string name="accessibility_service_name">انتخاب‌گر مخاطبین بله</string>
+    <string name="accessibility_service_description">مخاطبان موجود در صفحه افزودن عضو بله را انتخاب می‌کند و پیش از تأیید نهایی متوقف می‌شود.</string>
+</resources>
