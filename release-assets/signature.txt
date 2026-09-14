@@ -1,9 +1,0 @@
-Package: com.veilaura.balequeue
-Version code: 8
-Version name: 0.3.0-beta
-Minimum Android API: 26
-Target Android API: 35
-APK SHA-256: de85c84f4a8cc6ca1105fe0c34f1d3b45dd552f6821826a4c7958fe4f8fa06f8
-Signing certificate SHA-256: d121e435a2e9b3f0ef500ee8e15437a12439899de6683baa4d829643c295c90f
-APK Signature Scheme v2: verified
-APK Signature Scheme v3: verified
